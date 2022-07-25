@@ -13,7 +13,6 @@ const {
   commonAfterAll,
   testJobIds,
   u1Token,
-  u2Token,
   adminToken,
 } = require("./_testCommon");
 
@@ -222,13 +221,6 @@ describe("GET /users/:username", function () {
     });
   });
 
-  test("unauth for other users", async function () {
-    const resp = await request(app)
-        .get(`/users/u1`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
   test("unauth for anon", async function () {
     const resp = await request(app)
         .get(`/users/u1`);
@@ -280,16 +272,6 @@ describe("PATCH /users/:username", () => {
         isAdmin: false,
       },
     });
-  });
-
-  test("unauth if not same user", async function () {
-    const resp = await request(app)
-        .patch(`/users/u1`)
-        .send({
-          firstName: "New",
-        })
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
   });
 
   test("unauth for anon", async function () {
@@ -359,13 +341,6 @@ describe("DELETE /users/:username", function () {
     expect(resp.body).toEqual({ deleted: "u1" });
   });
 
-  test("unauth if not same user", async function () {
-    const resp = await request(app)
-        .delete(`/users/u1`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
   test("unauth for anon", async function () {
     const resp = await request(app)
         .delete(`/users/u1`);
@@ -397,12 +372,6 @@ describe("POST /users/:username/jobs/:id", function () {
     expect(resp.body).toEqual({ applied: testJobIds[1] });
   });
 
-  test("unauth for others", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/${testJobIds[1]}`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
 
   test("unauth for anon", async function () {
     const resp = await request(app)
